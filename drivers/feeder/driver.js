@@ -42,12 +42,12 @@ class FeederDriver extends Homey.Driver {
 
       try {
         const devices = await api.getDevices();
-        const feeders = devices.filter(device => device.type === 'feeder');
+        const feeders = devices.filter(device => device.type === 'Feeder');
 
         return feeders.map(feeder => ({
-          name: feeder.name || `Petkit Feeder ${feeder.id}`,
+          name: feeder.deviceNfo?.deviceName || `Petkit Feeder ${feeder.deviceNfo?.deviceId}`,
           data: {
-            id: feeder.id,
+            id: feeder.deviceNfo?.deviceId,
             type: feeder.type
           },
           store: {

@@ -42,12 +42,12 @@ class WaterFountainDriver extends Homey.Driver {
 
       try {
         const devices = await api.getDevices();
-        const fountains = devices.filter(device => device.type === 'fountain');
+        const fountains = devices.filter(device => device.type === 'WaterFountain');
 
         return fountains.map(fountain => ({
-          name: fountain.name || `Petkit Water Fountain ${fountain.id}`,
+          name: fountain.deviceNfo?.deviceName || `Petkit Water Fountain ${fountain.deviceNfo?.deviceId}`,
           data: {
-            id: fountain.id,
+            id: fountain.deviceNfo?.deviceId,
             type: fountain.type
           },
           store: {

@@ -42,12 +42,12 @@ class LitterBoxDriver extends Homey.Driver {
 
       try {
         const devices = await api.getDevices();
-        const litterBoxes = devices.filter(device => device.type === 'litter');
+        const litterBoxes = devices.filter(device => device.type === 'Litter');
 
         return litterBoxes.map(litterBox => ({
-          name: litterBox.name || `Petkit Litter Box ${litterBox.id}`,
+          name: litterBox.deviceNfo?.deviceName || `Petkit Litter Box ${litterBox.deviceNfo?.deviceId}`,
           data: {
-            id: litterBox.id,
+            id: litterBox.deviceNfo?.deviceId,
             type: litterBox.type
           },
           store: {

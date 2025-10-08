@@ -43,12 +43,12 @@ class AirPurifierDriver extends Homey.Driver {
 
       try {
         const devices = await api.getDevices();
-        const purifiers = devices.filter(device => device.type === 'purifier');
+        const purifiers = devices.filter(device => device.type === 'Purifier');
 
         return purifiers.map(purifier => ({
-          name: purifier.name || `Petkit Air Purifier ${purifier.id}`,
+          name: purifier.deviceNfo?.deviceName || `Petkit Air Purifier ${purifier.deviceNfo?.deviceId}`,
           data: {
-            id: purifier.id,
+            id: purifier.deviceNfo?.deviceId,
             type: purifier.type
           },
           store: {
