@@ -1,0 +1,36 @@
+{
+  "title": {
+    "en": "Set water fountain mode"
+  },
+  "hint": {
+    "en": "Set the water fountain operating mode"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=water-fountain"
+    },
+    {
+      "type": "dropdown",
+      "name": "mode",
+      "title": {
+        "en": "Mode"
+      },
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Normal"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "Smart"
+          }
+        }
+      ]
+    }
+  ]
+}

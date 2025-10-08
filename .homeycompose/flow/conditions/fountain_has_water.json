@@ -1,0 +1,26 @@
+{
+  "title": {
+    "en": "Water fountain has water"
+  },
+  "hint": {
+    "en": "Check if the water fountain has sufficient water"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=water-fountain"
+    },
+    {
+      "type": "number",
+      "name": "threshold",
+      "title": {
+        "en": "Minimum water level (%)"
+      },
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "value": 20
+    }
+  ]
+}

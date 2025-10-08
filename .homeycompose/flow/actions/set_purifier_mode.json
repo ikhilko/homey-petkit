@@ -1,0 +1,42 @@
+{
+  "title": {
+    "en": "Set air purifier mode"
+  },
+  "hint": {
+    "en": "Set the air purifier operating mode"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=air-purifier"
+    },
+    {
+      "type": "dropdown",
+      "name": "mode",
+      "title": {
+        "en": "Mode"
+      },
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Auto"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "Manual"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Sleep"
+          }
+        }
+      ]
+    }
+  ]
+}

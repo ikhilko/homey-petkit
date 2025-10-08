@@ -1,0 +1,22 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Fountain Mode"
+  },
+  "getable": true,
+  "setable": true,
+  "values": [
+    {
+      "id": "0",
+      "title": {
+        "en": "Normal"
+      }
+    },
+    {
+      "id": "1",
+      "title": {
+        "en": "Smart"
+      }
+    }
+  ]
+}

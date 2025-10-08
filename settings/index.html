@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      type="text/javascript"
+      src="/homey.js"
+      data-origin="settings"
+    ></script>
+  </head>
+  <body>
+    <header class="homey-header">
+      <h1 class="homey-title">Petkit Settings</h1>
+      <p class="homey-subtitle">Configure your Petkit API region and global settings</p>
+    </header>
+
+    <fieldset class="homey-form-fieldset">
+      <legend class="homey-form-legend">Regional Settings</legend>
+
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="api_region">Petkit Account Country</label>
+        <select class="homey-form-select" id="api_region">
+          <option value="DE">Germany (Default)</option>
+          <option value="US">United States</option>
+          <option value="GB">United Kingdom</option>
+          <option value="FR">France</option>
+          <option value="ES">Spain</option>
+          <option value="JP">Japan</option>
+          <option value="KR">South Korea</option>
+          <option value="AU">Australia</option>
+          <option value="CA">Canada</option>
+          <option value="CN">China</option>
+        </select>
+        <p class="homey-form-help">Select the country where your Petkit account is registered. China uses phone number login and Chinese API server, all other countries use email and international API server.</p>
+      </div>
+    </fieldset>
+
+    <button id="save" class="homey-button-primary-full">Save Settings</button>
+
+    <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 4px; border: 1px solid #dee2e6;">
+      <h4 style="margin-top: 0;">Important Notes</h4>
+      <ul style="margin-bottom: 0;">
+        <li><strong>China (CN):</strong> Use your registered phone number (without country code) during device pairing</li>
+        <li><strong>All other countries:</strong> Use your email address during device pairing</li>
+        <li><strong>Country selection:</strong> Choose the country where your Petkit account was originally registered</li>
+        <li><strong>Account limitation:</strong> PetKit accounts can only be logged in on one device at a time</li>
+        <li><strong>API Status:</strong> This app uses PetKit's undocumented API which may change without notice</li>
+      </ul>
+    </div>
+
+    <script type="text/javascript">
+      function onHomeyReady(Homey) {
+        Homey.ready();
+
+        var regionElement = document.getElementById("api_region");
+        var saveElement = document.getElementById("save");
+
+        // Load existing setting
+        Homey.get("api_region", function (err, region) {
+          if (err) {
+            console.error('Failed to load region setting:', err);
+            // Default to DE (Germany) like Python implementation
+            regionElement.value = "DE";
+          } else {
+            regionElement.value = region || "DE";
+          }
+        });
+
+        // Save setting
+        saveElement.addEventListener("click", function (e) {
+          var selectedRegion = regionElement.value;
+
+          Homey.set("api_region", selectedRegion, function (err) {
+            if (err) {
+              console.error('Failed to save region setting:', err);
+              return Homey.alert("Failed to save settings: " + err.message);
+            }
+
+            Homey.alert("Settings saved successfully! The new region will be used for new device pairings.");
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

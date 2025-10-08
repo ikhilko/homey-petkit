@@ -1,0 +1,90 @@
+{
+  "settings": {
+    "title": "Petkit Settings",
+    "username": "Email Address",
+    "password": "Password",
+    "region": "Region",
+    "timezone": "Timezone",
+    "save": "Save Settings",
+    "test_connection": "Test Connection",
+    "connection_success": "Connection successful!",
+    "connection_failed": "Connection failed",
+    "settings_saved": "Settings saved successfully!"
+  },
+  "pair": {
+    "login_failed": "Login failed. Please check your credentials.",
+    "device_list_failed": "Failed to retrieve device list."
+  },
+  "device": {
+    "unavailable": "Device is currently unavailable",
+    "feeder": {
+      "name": "Petkit Feeder",
+      "manual_feed": "Manual Feed",
+      "food_level": "Food Level",
+      "battery_level": "Battery Level",
+      "low_food_alert": "Low Food Alert"
+    },
+    "fountain": {
+      "name": "Petkit Water Fountain",
+      "water_level": "Water Level",
+      "filter_life": "Filter Life",
+      "pump": "Pump",
+      "mode": "Mode"
+    },
+    "litter": {
+      "name": "Petkit Litter Box",
+      "litter_level": "Litter Level",
+      "waste_level": "Waste Level",
+      "auto_clean": "Auto Clean",
+      "needs_cleaning": "Needs Cleaning"
+    },
+    "purifier": {
+      "name": "Petkit Air Purifier",
+      "air_quality": "Air Quality (PM2.5)",
+      "filter_life": "Filter Life",
+      "fan_speed": "Fan Speed",
+      "mode": "Mode"
+    }
+  },
+  "capabilities": {
+    "measure_battery": "Battery Level",
+    "meter_food_level": "Food Level",
+    "measure_water_level": "Water Level",
+    "meter_filter_life": "Filter Life",
+    "measure_litter_level": "Litter Level",
+    "measure_waste_level": "Waste Level",
+    "measure_pm25": "Air Quality (PM2.5)",
+    "fountain_mode": "Fountain Mode",
+    "purifier_mode": "Purifier Mode"
+  },
+  "flows": {
+    "triggers": {
+      "device_status_changed": "Device status changed",
+      "feeder_low_food": "Feeder food level is low",
+      "fountain_low_water": "Water fountain level is low",
+      "litter_needs_cleaning": "Litter box needs cleaning"
+    },
+    "conditions": {
+      "device_is_online": "Device is online",
+      "feeder_has_food": "Feeder has food",
+      "fountain_has_water": "Water fountain has water"
+    },
+    "actions": {
+      "feed_manual": "Feed manually",
+      "set_fountain_mode": "Set water fountain mode",
+      "start_cleaning": "Start litter box cleaning",
+      "set_purifier_mode": "Set air purifier mode"
+    }
+  },
+  "modes": {
+    "fountain": {
+      "normal": "Normal",
+      "smart": "Smart"
+    },
+    "purifier": {
+      "auto": "Auto",
+      "manual": "Manual",
+      "sleep": "Sleep"
+    }
+  }
+}

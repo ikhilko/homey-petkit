@@ -1,0 +1,28 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Purifier Mode"
+  },
+  "getable": true,
+  "setable": true,
+  "values": [
+    {
+      "id": "0",
+      "title": {
+        "en": "Auto"
+      }
+    },
+    {
+      "id": "1",
+      "title": {
+        "en": "Manual"
+      }
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Sleep"
+      }
+    }
+  ]
+}

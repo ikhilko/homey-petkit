@@ -1,0 +1,26 @@
+{
+  "title": {
+    "en": "Feeder has food"
+  },
+  "hint": {
+    "en": "Check if the feeder has food available"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=feeder"
+    },
+    {
+      "type": "number",
+      "name": "threshold",
+      "title": {
+        "en": "Minimum food level (%)"
+      },
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "value": 10
+    }
+  ]
+}

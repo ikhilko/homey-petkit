@@ -1,0 +1,15 @@
+{
+  "title": {
+    "en": "Start litter box cleaning"
+  },
+  "hint": {
+    "en": "Start the automatic cleaning cycle"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=litter-box"
+    }
+  ]
+}

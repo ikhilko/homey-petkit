@@ -1,0 +1,25 @@
+{
+  "title": {
+    "en": "Feeder food level is low"
+  },
+  "hint": {
+    "en": "Triggered when the feeder food level drops below threshold"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=feeder"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "food_level",
+      "type": "number",
+      "title": {
+        "en": "Food Level (%)"
+      },
+      "example": 15
+    }
+  ]
+}

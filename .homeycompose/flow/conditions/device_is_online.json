@@ -1,0 +1,15 @@
+{
+  "title": {
+    "en": "Device is online"
+  },
+  "hint": {
+    "en": "Check if the device is currently online"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=feeder|water-fountain|litter-box|air-purifier"
+    }
+  ]
+}

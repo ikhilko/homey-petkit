@@ -1,0 +1,26 @@
+{
+  "title": {
+    "en": "Feed manually"
+  },
+  "hint": {
+    "en": "Trigger a manual feeding"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=feeder"
+    },
+    {
+      "type": "number",
+      "name": "amount",
+      "title": {
+        "en": "Amount (portions)"
+      },
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "value": 1
+    }
+  ]
+}

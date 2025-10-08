@@ -1,0 +1,27 @@
+{
+  "title": {
+    "en": "Device status changed"
+  },
+  "hint": {
+    "en": "Triggered when a Petkit device comes online or goes offline"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=feeder|water-fountain|litter-box|air-purifier"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "status",
+      "type": "string",
+      "title": {
+        "en": "Status"
+      },
+      "example": {
+        "en": "online"
+      }
+    }
+  ]
+}

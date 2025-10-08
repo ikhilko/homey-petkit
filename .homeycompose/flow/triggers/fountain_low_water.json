@@ -1,0 +1,25 @@
+{
+  "title": {
+    "en": "Water fountain level is low"
+  },
+  "hint": {
+    "en": "Triggered when the water fountain level drops below threshold"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=water-fountain"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "water_level",
+      "type": "number",
+      "title": {
+        "en": "Water Level (%)"
+      },
+      "example": 20
+    }
+  ]
+}
