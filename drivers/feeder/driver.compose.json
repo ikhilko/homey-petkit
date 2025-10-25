@@ -63,6 +63,9 @@
     {
       "id": "list_devices",
       "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      },
       "options": {
         "title": {
           "en": "Select your Petkit Feeder"
