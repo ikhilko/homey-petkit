@@ -1,19 +1,34 @@
-'use strict';
+import Homey from 'homey';
+import { PetKitClient, FeederStatus } from '../../lib/petkit-api/index.mjs';
 
-const Homey = require('homey');
-const { PetKitClient } = require('../../lib/petkit-api');
+interface DeviceData {
+  id: number;
+  type: string;
+}
+
+interface DeviceStore {
+  username: string;
+  password: string;
+}
+
+interface DeviceSettings {
+  poll_interval?: number;
+  low_food_threshold?: number;
+}
 
 class FeederDevice extends Homey.Device {
+  private api!: PetKitClient;
+  private pollInterval: ReturnType<typeof setInterval> | null = null;
 
-  async onInit() {
+  async onInit(): Promise<void> {
     this.log('Petkit Feeder Device has been initialized');
 
-    const store = this.getStore();
-    const region = this.homey.settings.get('api_region') || 'DE';
+    const store = this.getStore() as DeviceStore;
+    const region = this.homey.settings.get('api_region') as string || 'DE';
     this.api = new PetKitClient({
       username: store.username,
       password: store.password,
-      region: region
+      region: region,
     });
 
     // Register capability listeners
@@ -27,14 +42,23 @@ class FeederDevice extends Homey.Device {
     // Start polling for device status
     this.startPolling();
 
-    this.log('Feeder device initialized with ID:', this.getData().id);
+    const deviceData = this.getData() as DeviceData;
+    this.log('Feeder device initialized with ID:', deviceData.id);
   }
 
-  async onAdded() {
+  async onAdded(): Promise<void> {
     this.log('Petkit Feeder has been added');
   }
 
-  async onSettings({ oldSettings, newSettings, changedKeys }) {
+  async onSettings({
+    oldSettings,
+    newSettings,
+    changedKeys,
+  }: {
+    oldSettings: DeviceSettings;
+    newSettings: DeviceSettings;
+    changedKeys: string[];
+  }): Promise<void> {
     this.log('Petkit Feeder settings were changed');
 
     if (changedKeys.includes('poll_interval')) {
@@ -42,37 +66,38 @@ class FeederDevice extends Homey.Device {
     }
   }
 
-  async onRenamed(name) {
+  async onRenamed(_name: string): Promise<void> {
     this.log('Petkit Feeder was renamed');
   }
 
-  async onDeleted() {
+  async onDeleted(): Promise<void> {
     this.log('Petkit Feeder has been deleted');
     this.stopPolling();
   }
 
-  async onCapabilityOnoff(value, opts) {
+  private async onCapabilityOnoff(value: boolean, _opts: object): Promise<void> {
     if (value) {
       // Trigger manual feed when turned "on"
-      return this.feedManual(1);
+      await this.feedManual(1);
     }
-    return Promise.resolve();
   }
 
-  async feedManual(amount = 1) {
+  async feedManual(amount: number = 1): Promise<boolean> {
     try {
-      const deviceId = this.getData().id;
+      const deviceData = this.getData() as DeviceData;
+      const deviceId = deviceData.id;
       await this.api.feedManual(deviceId, amount);
 
       this.log(`Manual feed triggered: ${amount} portion(s)`);
 
       // Trigger flow
-      await this.homey.flow.getDeviceTriggerCard('device_status_changed')
+      await this.homey.flow
+        .getDeviceTriggerCard('device_status_changed')
         .trigger(this, { status: 'feeding' });
 
       // Reset onoff capability after feeding
       setTimeout(() => {
-        this.setCapabilityValue('onoff', false).catch(this.error);
+        this.setCapabilityValue('onoff', false).catch(this.error.bind(this));
       }, 1000);
 
       return true;
@@ -82,24 +107,26 @@ class FeederDevice extends Homey.Device {
     }
   }
 
-  async updateDeviceStatus() {
+  private async updateDeviceStatus(): Promise<void> {
     try {
-      const deviceId = this.getData().id;
-      const status = await this.api.getFeederStatus(deviceId);
+      const deviceData = this.getData() as DeviceData;
+      const deviceId = deviceData.id;
+      const status: FeederStatus = await this.api.getFeederStatus(deviceId);
 
       // Update capabilities
       await this.setCapabilityValue('measure_battery', status.batteryLevel);
       await this.setCapabilityValue('meter_food_level', status.foodLevel);
 
       // Check for low food alert
-      const settings = this.getSettings();
+      const settings = this.getSettings() as DeviceSettings;
       const lowFoodThreshold = settings.low_food_threshold || 20;
 
       if (status.foodLevel <= lowFoodThreshold) {
         await this.setCapabilityValue('alarm_generic', true);
 
         // Trigger low food flow
-        await this.homey.flow.getDeviceTriggerCard('feeder_low_food')
+        await this.homey.flow
+          .getDeviceTriggerCard('feeder_low_food')
           .trigger(this, { food_level: status.foodLevel });
       } else {
         await this.setCapabilityValue('alarm_generic', false);
@@ -115,10 +142,10 @@ class FeederDevice extends Homey.Device {
     }
   }
 
-  startPolling() {
+  private startPolling(): void {
     this.stopPolling();
 
-    const settings = this.getSettings();
+    const settings = this.getSettings() as DeviceSettings;
     const interval = (settings.poll_interval || 300) * 1000; // Convert to milliseconds
 
     this.pollInterval = setInterval(() => {
@@ -129,13 +156,12 @@ class FeederDevice extends Homey.Device {
     this.updateDeviceStatus();
   }
 
-  stopPolling() {
+  private stopPolling(): void {
     if (this.pollInterval) {
       clearInterval(this.pollInterval);
       this.pollInterval = null;
     }
   }
-
 }
 
-module.exports = FeederDevice;
+export default FeederDevice;

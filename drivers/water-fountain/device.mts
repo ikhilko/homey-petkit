@@ -1,19 +1,34 @@
-'use strict';
+import Homey from 'homey';
+import { PetKitClient, FountainStatus } from '../../lib/petkit-api/index.mjs';
 
-const Homey = require('homey');
-const { PetKitClient } = require('../../lib/petkit-api');
+interface DeviceData {
+  id: number;
+  type: string;
+}
+
+interface DeviceStore {
+  username: string;
+  password: string;
+}
+
+interface DeviceSettings {
+  poll_interval?: number;
+  low_water_threshold?: number;
+}
 
 class WaterFountainDevice extends Homey.Device {
+  private api!: PetKitClient;
+  private pollInterval: ReturnType<typeof setInterval> | null = null;
 
-  async onInit() {
+  async onInit(): Promise<void> {
     this.log('Petkit Water Fountain Device has been initialized');
 
-    const store = this.getStore();
-    const region = this.homey.settings.get('api_region') || 'DE';
+    const store = this.getStore() as DeviceStore;
+    const region = this.homey.settings.get('api_region') as string || 'DE';
     this.api = new PetKitClient({
       username: store.username,
       password: store.password,
-      region: region
+      region: region,
     });
 
     // Register capability listeners
@@ -33,14 +48,23 @@ class WaterFountainDevice extends Homey.Device {
     // Start polling for device status
     this.startPolling();
 
-    this.log('Water fountain device initialized with ID:', this.getData().id);
+    const deviceData = this.getData() as DeviceData;
+    this.log('Water fountain device initialized with ID:', deviceData.id);
   }
 
-  async onAdded() {
+  async onAdded(): Promise<void> {
     this.log('Petkit Water Fountain has been added');
   }
 
-  async onSettings({ oldSettings, newSettings, changedKeys }) {
+  async onSettings({
+    oldSettings,
+    newSettings,
+    changedKeys,
+  }: {
+    oldSettings: DeviceSettings;
+    newSettings: DeviceSettings;
+    changedKeys: string[];
+  }): Promise<void> {
     this.log('Petkit Water Fountain settings were changed');
 
     if (changedKeys.includes('poll_interval')) {
@@ -48,28 +72,29 @@ class WaterFountainDevice extends Homey.Device {
     }
   }
 
-  async onRenamed(name) {
+  async onRenamed(_name: string): Promise<void> {
     this.log('Petkit Water Fountain was renamed');
   }
 
-  async onDeleted() {
+  async onDeleted(): Promise<void> {
     this.log('Petkit Water Fountain has been deleted');
     this.stopPolling();
   }
 
-  async onCapabilityOnoff(value, opts) {
+  private async onCapabilityOnoff(value: boolean, _opts: object): Promise<void> {
     try {
       const mode = value ? 1 : 0; // 1 = smart mode (pump on), 0 = normal mode (pump off)
-      return this.setFountainMode(mode);
+      await this.setFountainMode(mode);
     } catch (error) {
       this.error('Failed to set pump state:', error);
       throw error;
     }
   }
 
-  async setFountainMode(mode) {
+  async setFountainMode(mode: number): Promise<boolean> {
     try {
-      const deviceId = this.getData().id;
+      const deviceData = this.getData() as DeviceData;
+      const deviceId = deviceData.id;
       await this.api.setFountainMode(deviceId, mode);
 
       this.log(`Fountain mode set to: ${mode}`);
@@ -79,7 +104,8 @@ class WaterFountainDevice extends Homey.Device {
       await this.setCapabilityValue('fountain_mode', mode.toString());
 
       // Trigger flow
-      await this.homey.flow.getDeviceTriggerCard('device_status_changed')
+      await this.homey.flow
+        .getDeviceTriggerCard('device_status_changed')
         .trigger(this, { status: mode === 1 ? 'pump_on' : 'pump_off' });
 
       return true;
@@ -89,10 +115,11 @@ class WaterFountainDevice extends Homey.Device {
     }
   }
 
-  async updateDeviceStatus() {
+  private async updateDeviceStatus(): Promise<void> {
     try {
-      const deviceId = this.getData().id;
-      const status = await this.api.getFountainStatus(deviceId);
+      const deviceData = this.getData() as DeviceData;
+      const deviceId = deviceData.id;
+      const status: FountainStatus = await this.api.getFountainStatus(deviceId);
 
       // Update capabilities
       await this.setCapabilityValue('measure_water_level', status.waterLevel);
@@ -101,12 +128,13 @@ class WaterFountainDevice extends Homey.Device {
       await this.setCapabilityValue('fountain_mode', status.mode.toString());
 
       // Check for low water alert
-      const settings = this.getSettings();
+      const settings = this.getSettings() as DeviceSettings;
       const lowWaterThreshold = settings.low_water_threshold || 20;
 
       if (status.waterLevel <= lowWaterThreshold) {
         // Trigger low water flow
-        await this.homey.flow.getDeviceTriggerCard('fountain_low_water')
+        await this.homey.flow
+          .getDeviceTriggerCard('fountain_low_water')
           .trigger(this, { water_level: status.waterLevel });
       }
 
@@ -120,10 +148,10 @@ class WaterFountainDevice extends Homey.Device {
     }
   }
 
-  startPolling() {
+  private startPolling(): void {
     this.stopPolling();
 
-    const settings = this.getSettings();
+    const settings = this.getSettings() as DeviceSettings;
     const interval = (settings.poll_interval || 300) * 1000; // Convert to milliseconds
 
     this.pollInterval = setInterval(() => {
@@ -134,13 +162,12 @@ class WaterFountainDevice extends Homey.Device {
     this.updateDeviceStatus();
   }
 
-  stopPolling() {
+  private stopPolling(): void {
     if (this.pollInterval) {
       clearInterval(this.pollInterval);
       this.pollInterval = null;
     }
   }
-
 }
 
-module.exports = WaterFountainDevice;
+export default WaterFountainDevice;

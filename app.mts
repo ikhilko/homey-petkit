@@ -1,7 +1,7 @@
-'use strict';
+import 'source-map-support/register.js';
+import Homey from 'homey';
 
-const Homey = require('homey');
-const { PetKitClient } = require('./lib/petkit-api');
+import { PetKitClient } from './lib/petkit-api/index.mjs';
 
 class PetkitApp extends Homey.App {
 
@@ -37,4 +37,4 @@ class PetkitApp extends Homey.App {
 
 }
 
-module.exports = PetkitApp;
+export default PetkitApp;
