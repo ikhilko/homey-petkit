@@ -1,7 +1,7 @@
 'use strict';
 
 const Homey = require('homey');
-const PetKitClient = require('./lib/petkit-api');
+const { PetKitClient } = require('./lib/petkit-api');
 
 class PetkitApp extends Homey.App {
 

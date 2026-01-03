@@ -1,7 +1,7 @@
 'use strict';
 
 const Homey = require('homey');
-const PetkitAPI = require('../../lib/petkit-api');
+const { PetKitClient } = require('../../lib/petkit-api');
 
 class FeederDevice extends Homey.Device {
 
@@ -10,7 +10,7 @@ class FeederDevice extends Homey.Device {
 
     const store = this.getStore();
     const region = this.homey.settings.get('api_region') || 'DE';
-    this.api = new PetkitAPI({
+    this.api = new PetKitClient({
       username: store.username,
       password: store.password,
       region: region

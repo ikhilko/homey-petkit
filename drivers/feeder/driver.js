@@ -22,9 +22,9 @@ class FeederDriver extends Homey.Driver {
       password = data.password;
 
       // Validate credentials
-      const PetkitAPI = require('../../lib/petkit-api');
+      const { PetKitClient } = require('../../lib/petkit-api');
       const region = this.homey.settings.get('api_region') || 'DE';
-      api = new PetkitAPI({ username, password, region });
+      api = new PetKitClient({ username, password, region });
 
       try {
         await api.login();
