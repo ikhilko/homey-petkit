@@ -1,6 +1,6 @@
 {
   "name": {
-    "en": "Petkit Litter Box"
+    "en": "Pura MAX"
   },
   "class": "other",
   "capabilities": [
@@ -12,7 +12,7 @@
   "capabilitiesOptions": {
     "onoff": {
       "title": {
-        "en": "Auto Clean"
+        "en": "Start Cleaning"
       }
     },
     "measure_litter_level": {
@@ -40,8 +40,8 @@
     "cloud"
   ],
   "images": {
-    "small": "/drivers/litter-box/assets/images/small.png",
-    "large": "/drivers/litter-box/assets/images/large.png"
+    "small": "/drivers/pura-max/assets/images/small.png",
+    "large": "/drivers/pura-max/assets/images/large.png"
   },
   "pair": [
     {
@@ -73,7 +73,7 @@
       },
       "options": {
         "title": {
-          "en": "Select your Petkit Litter Box"
+          "en": "Select your Pura MAX"
         }
       }
     },

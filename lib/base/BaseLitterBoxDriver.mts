@@ -1,17 +1,9 @@
 import Homey from 'homey';
-import { PetKitClient, DeviceEntity, DEVICES_LITTER_BOX } from '../../lib/petkit-api/index.mjs';
+import { PetKitClient, DeviceEntity, DeviceType } from '../petkit-api/index.mjs';
 
 interface LoginData {
   username: string;
   password: string;
-}
-
-interface FlowActionArgs {
-  device: LitterBoxDevice;
-}
-
-interface LitterBoxDevice extends Homey.Device {
-  startCleaning(): Promise<boolean>;
 }
 
 interface PairingDevice {
@@ -26,9 +18,32 @@ interface PairingDevice {
   };
 }
 
-class LitterBoxDriver extends Homey.Driver {
+interface BaseLitterBoxDeviceInterface extends Homey.Device {
+  startCleaning(): Promise<boolean>;
+}
+
+interface FlowActionArgs {
+  device: BaseLitterBoxDeviceInterface;
+}
+
+/**
+ * Base class for all PetKit litter box drivers.
+ * Handles common pairing flow and flow card registration.
+ * Model-specific drivers should extend this class.
+ */
+abstract class BaseLitterBoxDriver extends Homey.Driver {
+  /**
+   * Override in subclass to return the model name for logging
+   */
+  protected abstract getModelName(): string;
+
+  /**
+   * Override in subclass to return the device types to filter during pairing
+   */
+  protected abstract getSupportedDeviceTypes(): DeviceType[];
+
   async onInit(): Promise<void> {
-    this.log('Petkit Litter Box Driver has been initialized');
+    this.log(`${this.getModelName()} Driver has been initialized`);
 
     // Register flow card actions
     this.homey.flow
@@ -64,17 +79,22 @@ class LitterBoxDriver extends Homey.Driver {
 
       try {
         const devices = await api.getDevices();
-        const litterBoxes = devices.filter(
-          (device: DeviceEntity) =>
-            device.type === 'Litter' ||
-            (DEVICES_LITTER_BOX as readonly string[]).includes(device.deviceNfo?.deviceType?.toLowerCase() || '')
-        );
+        const supportedTypes = this.getSupportedDeviceTypes();
 
-        return litterBoxes.map((litterBox: DeviceEntity): PairingDevice => ({
-          name: litterBox.deviceNfo?.deviceName || `Petkit Litter Box ${litterBox.deviceNfo?.deviceId}`,
+        // Filter devices to only show supported litter box types
+        const filteredDevices = devices.filter((device: DeviceEntity) => {
+          if (device.type !== 'Litter') {
+            return false;
+          }
+          const deviceType = device.deviceNfo?.deviceType?.toLowerCase() || '';
+          return supportedTypes.includes(deviceType as DeviceType);
+        });
+
+        return filteredDevices.map((device: DeviceEntity): PairingDevice => ({
+          name: device.deviceNfo?.deviceName || `${this.getModelName()} ${device.deviceNfo?.deviceId}`,
           data: {
-            id: litterBox.deviceNfo?.deviceId ?? 0,
-            type: litterBox.type,
+            id: device.deviceNfo?.deviceId ?? 0,
+            type: device.deviceNfo?.deviceType || device.type,
           },
           store: {
             username,
@@ -93,4 +113,4 @@ class LitterBoxDriver extends Homey.Driver {
   }
 }
 
-export default LitterBoxDriver;
+export default BaseLitterBoxDriver;

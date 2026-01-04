@@ -9,7 +9,7 @@
     {
       "type": "device",
       "name": "device",
-      "filter": "driver_id=feeder|water-fountain|litter-box|air-purifier"
+      "filter": "driver_id=feeder|water-fountain|pura-max|air-purifier"
     }
   ],
   "tokens": [

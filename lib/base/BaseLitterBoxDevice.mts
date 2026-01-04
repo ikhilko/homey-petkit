@@ -1,29 +1,39 @@
 import Homey from 'homey';
-import { PetKitClient, LitterStatus } from '../../lib/petkit-api/index.mjs';
+import { PetKitClient, LitterStatus } from '../petkit-api/index.mjs';
 
-interface DeviceData {
+export interface LitterBoxDeviceData {
   id: number;
   type: string;
 }
 
-interface DeviceStore {
+export interface LitterBoxDeviceStore {
   username: string;
   password: string;
 }
 
-interface DeviceSettings {
+export interface LitterBoxDeviceSettings {
   poll_interval?: number;
   high_waste_threshold?: number;
 }
 
-class LitterBoxDevice extends Homey.Device {
-  private api!: PetKitClient;
+/**
+ * Base class for all PetKit litter box devices.
+ * Handles common functionality like polling, status updates, and cleaning commands.
+ * Model-specific devices should extend this class.
+ */
+abstract class BaseLitterBoxDevice extends Homey.Device {
+  protected api!: PetKitClient;
   private pollInterval: ReturnType<typeof setInterval> | null = null;
 
-  async onInit(): Promise<void> {
-    this.log('Petkit Litter Box Device has been initialized');
+  /**
+   * Override in subclass to return the model name for logging
+   */
+  protected abstract getModelName(): string;
 
-    const store = this.getStore() as DeviceStore;
+  async onInit(): Promise<void> {
+    this.log(`${this.getModelName()} Device has been initialized`);
+
+    const store = this.getStore() as LitterBoxDeviceStore;
     const region = this.homey.settings.get('api_region') as string || 'DE';
     this.api = new PetKitClient({
       username: store.username,
@@ -34,23 +44,30 @@ class LitterBoxDevice extends Homey.Device {
     // Register capability listeners
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
 
-    // Add custom capabilities
+    // Ensure capabilities are added
+    await this.ensureCapabilities();
+
+    // Start polling for device status
+    this.startPolling();
+
+    const deviceData = this.getData() as LitterBoxDeviceData;
+    this.log(`${this.getModelName()} device initialized with ID:`, deviceData.id);
+  }
+
+  /**
+   * Override in subclass to add model-specific capabilities
+   */
+  protected async ensureCapabilities(): Promise<void> {
     if (!this.hasCapability('measure_litter_level')) {
       await this.addCapability('measure_litter_level');
     }
     if (!this.hasCapability('measure_waste_level')) {
       await this.addCapability('measure_waste_level');
     }
-
-    // Start polling for device status
-    this.startPolling();
-
-    const deviceData = this.getData() as DeviceData;
-    this.log('Litter box device initialized with ID:', deviceData.id);
   }
 
   async onAdded(): Promise<void> {
-    this.log('Petkit Litter Box has been added');
+    this.log(`${this.getModelName()} has been added`);
   }
 
   async onSettings({
@@ -58,11 +75,11 @@ class LitterBoxDevice extends Homey.Device {
     newSettings,
     changedKeys,
   }: {
-    oldSettings: DeviceSettings;
-    newSettings: DeviceSettings;
+    oldSettings: LitterBoxDeviceSettings;
+    newSettings: LitterBoxDeviceSettings;
     changedKeys: string[];
   }): Promise<void> {
-    this.log('Petkit Litter Box settings were changed');
+    this.log(`${this.getModelName()} settings were changed`);
 
     if (changedKeys.includes('poll_interval')) {
       this.startPolling();
@@ -70,24 +87,23 @@ class LitterBoxDevice extends Homey.Device {
   }
 
   async onRenamed(_name: string): Promise<void> {
-    this.log('Petkit Litter Box was renamed');
+    this.log(`${this.getModelName()} was renamed`);
   }
 
   async onDeleted(): Promise<void> {
-    this.log('Petkit Litter Box has been deleted');
+    this.log(`${this.getModelName()} has been deleted`);
     this.stopPolling();
   }
 
   private async onCapabilityOnoff(value: boolean, _opts: object): Promise<void> {
     if (value) {
-      // Start cleaning when turned "on"
       await this.startCleaning();
     }
   }
 
   async startCleaning(): Promise<boolean> {
     try {
-      const deviceData = this.getData() as DeviceData;
+      const deviceData = this.getData() as LitterBoxDeviceData;
       const deviceId = deviceData.id;
       await this.api.startCleaning(deviceId);
 
@@ -110,18 +126,21 @@ class LitterBoxDevice extends Homey.Device {
     }
   }
 
-  private async updateDeviceStatus(): Promise<void> {
+  /**
+   * Override in subclass to handle model-specific status fields
+   */
+  protected async updateDeviceStatus(): Promise<void> {
     try {
-      const deviceData = this.getData() as DeviceData;
+      const deviceData = this.getData() as LitterBoxDeviceData;
       const deviceId = deviceData.id;
       const status: LitterStatus = await this.api.getLitterStatus(deviceId);
 
-      // Update capabilities
+      // Update common capabilities
       await this.setCapabilityValue('measure_litter_level', status.litterLevel);
       await this.setCapabilityValue('measure_waste_level', status.wasteLevel);
 
       // Check for high waste alert
-      const settings = this.getSettings() as DeviceSettings;
+      const settings = this.getSettings() as LitterBoxDeviceSettings;
       const highWasteThreshold = settings.high_waste_threshold || 80;
 
       if (status.wasteLevel >= highWasteThreshold) {
@@ -135,6 +154,9 @@ class LitterBoxDevice extends Homey.Device {
         await this.setCapabilityValue('alarm_generic', false);
       }
 
+      // Allow subclasses to handle model-specific status
+      await this.onStatusUpdate(status);
+
       // Update availability
       await this.setAvailable();
 
@@ -145,11 +167,19 @@ class LitterBoxDevice extends Homey.Device {
     }
   }
 
-  private startPolling(): void {
+  /**
+   * Override in subclass to handle model-specific status updates
+   */
+  protected async onStatusUpdate(_status: LitterStatus): Promise<void> {
+    // Default implementation does nothing
+    // Subclasses can override to handle model-specific fields
+  }
+
+  protected startPolling(): void {
     this.stopPolling();
 
-    const settings = this.getSettings() as DeviceSettings;
-    const interval = (settings.poll_interval || 300) * 1000; // Convert to milliseconds
+    const settings = this.getSettings() as LitterBoxDeviceSettings;
+    const interval = (settings.poll_interval || 300) * 1000;
 
     this.pollInterval = setInterval(() => {
       this.updateDeviceStatus();
@@ -159,7 +189,7 @@ class LitterBoxDevice extends Homey.Device {
     this.updateDeviceStatus();
   }
 
-  private stopPolling(): void {
+  protected stopPolling(): void {
     if (this.pollInterval) {
       clearInterval(this.pollInterval);
       this.pollInterval = null;
@@ -167,4 +197,4 @@ class LitterBoxDevice extends Homey.Device {
   }
 }
 
-export default LitterBoxDevice;
+export default BaseLitterBoxDevice;

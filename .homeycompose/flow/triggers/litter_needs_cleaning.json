@@ -9,7 +9,7 @@
     {
       "type": "device",
       "name": "device",
-      "filter": "driver_id=litter-box"
+      "filter": "driver_id=pura-max"
     }
   ],
   "tokens": [

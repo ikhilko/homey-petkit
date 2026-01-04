@@ -545,7 +545,7 @@ export class PetKitClient {
                 ...(detailedDevice.state || {}),
                 type: deviceType,
                 deviceNfo: {
-                  deviceType: deviceType.toLowerCase(),
+                  deviceType: deviceTypeCode,
                   deviceId: detailedDevice.id,
                   createdAt: detailedDevice.createdAt,
                   deviceName: detailedDevice.name,
