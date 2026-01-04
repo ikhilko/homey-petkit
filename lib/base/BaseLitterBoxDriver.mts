@@ -48,13 +48,36 @@ abstract class BaseLitterBoxDriver extends Homey.Driver {
   }
 
   async onPair(session: Homey.Driver.PairSession): Promise<void> {
-    let username = '';
-    let password = '';
     let api: PetKitClient | null = null;
 
+    // Handle loading page - check for existing credentials
+    session.setHandler('showView', async (viewId: string): Promise<void> => {
+      if (viewId === 'loading') {
+        const storedUsername = this.homey.settings.get('petkit_username') as string;
+        const storedPassword = this.homey.settings.get('petkit_password') as string;
+
+        if (storedUsername && storedPassword) {
+          this.log('Credentials found in settings, attempting login');
+          const region = this.homey.settings.get('api_region') as string || 'DE';
+          api = new PetKitClient({ username: storedUsername, password: storedPassword, region });
+
+          try {
+            await api.login();
+            this.log('Login successful, showing device list');
+            await session.showView('list_devices');
+          } catch (error) {
+            this.error('Stored credentials failed:', error);
+            await session.showView('login_credentials');
+          }
+        } else {
+          this.log('No credentials found, showing login');
+          await session.showView('login_credentials');
+        }
+      }
+    });
+
     session.setHandler('login', async (data: LoginData): Promise<boolean> => {
-      username = data.username;
-      password = data.password;
+      const { username, password } = data;
 
       const region = this.homey.settings.get('api_region') as string || 'DE';
       api = new PetKitClient({ username, password, region });

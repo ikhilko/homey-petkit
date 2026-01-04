@@ -107,13 +107,8 @@
               return Homey.alert("Failed to save settings: " + err.message);
             }
 
-            // Only save credentials if provided
-            if (username) {
-              Homey.set("petkit_username", username);
-            }
-            if (password) {
-              Homey.set("petkit_password", password);
-            }
+            Homey.set("petkit_username", username);
+            Homey.set("petkit_password", password);
 
             Homey.alert("Settings saved successfully!");
           });
