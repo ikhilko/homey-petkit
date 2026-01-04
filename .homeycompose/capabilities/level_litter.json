@@ -1,0 +1,13 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Level Litter"
+  },
+  "desc": {
+    "en": "Flatten litter level."
+  },
+  "getable": false,
+  "setable": false,
+  "uiComponent": "button",
+  "icon": "/assets/icon_tools_level.svg"
+}

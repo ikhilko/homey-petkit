@@ -34,6 +34,22 @@
       </div>
     </fieldset>
 
+    <fieldset class="homey-form-fieldset">
+      <legend class="homey-form-legend">Account Credentials</legend>
+
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="petkit_username">Username</label>
+        <input class="homey-form-input" type="text" id="petkit_username" placeholder="Email or phone number">
+        <p class="homey-form-help">Your Petkit account email (or phone number for China region).</p>
+      </div>
+
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="petkit_password">Password</label>
+        <input class="homey-form-input" type="password" id="petkit_password" placeholder="Password">
+        <p class="homey-form-help">Your Petkit account password. Updating credentials here will apply to all devices.</p>
+      </div>
+    </fieldset>
+
     <button id="save" class="homey-button-primary-full">Save Settings</button>
 
     <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 4px; border: 1px solid #dee2e6;">
@@ -52,30 +68,54 @@
         Homey.ready();
 
         var regionElement = document.getElementById("api_region");
+        var usernameElement = document.getElementById("petkit_username");
+        var passwordElement = document.getElementById("petkit_password");
         var saveElement = document.getElementById("save");
 
-        // Load existing setting
+        // Load existing settings
         Homey.get("api_region", function (err, region) {
           if (err) {
             console.error('Failed to load region setting:', err);
-            // Default to DE (Germany) like Python implementation
             regionElement.value = "DE";
           } else {
             regionElement.value = region || "DE";
           }
         });
 
-        // Save setting
-        saveElement.addEventListener("click", function (e) {
-          var selectedRegion = regionElement.value;
+        Homey.get("petkit_username", function (err, username) {
+          if (!err && username) {
+            usernameElement.value = username;
+          }
+        });
 
+        Homey.get("petkit_password", function (err, password) {
+          if (!err && password) {
+            passwordElement.value = password;
+          }
+        });
+
+        // Save settings
+        saveElement.addEventListener("click", function () {
+          var selectedRegion = regionElement.value;
+          var username = usernameElement.value.trim();
+          var password = passwordElement.value;
+
+          // Save all settings
           Homey.set("api_region", selectedRegion, function (err) {
             if (err) {
               console.error('Failed to save region setting:', err);
               return Homey.alert("Failed to save settings: " + err.message);
             }
 
-            Homey.alert("Settings saved successfully! The new region will be used for new device pairings.");
+            // Only save credentials if provided
+            if (username) {
+              Homey.set("petkit_username", username);
+            }
+            if (password) {
+              Homey.set("petkit_password", password);
+            }
+
+            Homey.alert("Settings saved successfully!");
           });
         });
       }

@@ -12,10 +12,6 @@ interface PairingDevice {
     id: number;
     type: string;
   };
-  store: {
-    username: string;
-    password: string;
-  };
 }
 
 interface BaseLitterBoxDeviceInterface extends Homey.Device {
@@ -65,6 +61,11 @@ abstract class BaseLitterBoxDriver extends Homey.Driver {
 
       try {
         await api.login();
+
+        // Store credentials in app settings (shared across all devices)
+        this.homey.settings.set('petkit_username', username);
+        this.homey.settings.set('petkit_password', password);
+
         return true;
       } catch (error) {
         this.error('Login failed:', error);
@@ -95,10 +96,6 @@ abstract class BaseLitterBoxDriver extends Homey.Driver {
           data: {
             id: device.deviceNfo?.deviceId ?? 0,
             type: device.deviceNfo?.deviceType || device.type,
-          },
-          store: {
-            username,
-            password,
           },
         }));
       } catch (error) {

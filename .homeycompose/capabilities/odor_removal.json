@@ -1,0 +1,13 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Deodorize"
+  },
+  "desc": {
+    "en": "Start the odor removal process."
+  },
+  "getable": false,
+  "setable": false,
+  "uiComponent": "button",
+  "icon": "/assets/icon_fragrance.svg"
+}

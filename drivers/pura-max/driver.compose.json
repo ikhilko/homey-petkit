@@ -4,15 +4,23 @@
   },
   "class": "other",
   "capabilities": [
-    "onoff",
+    "start_cleaning",
+    "odor_removal",
+    "level_litter",
+    "start_dumping",
+    "button.calibrate_litter",
     "measure_litter_level",
     "measure_waste_level",
     "alarm_generic"
   ],
   "capabilitiesOptions": {
-    "onoff": {
+    "button.calibrate_litter": {
+      "maintenanceAction": true,
       "title": {
-        "en": "Start Cleaning"
+        "en": "Calibrate Litter"
+      },
+      "desc": {
+        "en": "Start the litter calibration process."
       }
     },
     "measure_litter_level": {

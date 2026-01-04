@@ -7,8 +7,7 @@ export interface LitterBoxDeviceData {
 }
 
 export interface LitterBoxDeviceStore {
-  username: string;
-  password: string;
+  // Credentials are now stored in app settings (petkit_username, petkit_password)
 }
 
 export interface LitterBoxDeviceSettings {
@@ -33,16 +32,19 @@ abstract class BaseLitterBoxDevice extends Homey.Device {
   async onInit(): Promise<void> {
     this.log(`${this.getModelName()} Device has been initialized`);
 
-    const store = this.getStore() as LitterBoxDeviceStore;
-    const region = this.homey.settings.get('api_region') as string || 'DE';
-    this.api = new PetKitClient({
-      username: store.username,
-      password: store.password,
-      region: region,
+    // Initialize API client with credentials from app settings
+    this.initializeApiClient();
+
+    // Listen for credential changes in app settings
+    this.homey.settings.on('set', (key: string) => {
+      if (key === 'petkit_username' || key === 'petkit_password') {
+        this.log('Credentials changed, reinitializing API client');
+        this.initializeApiClient();
+      }
     });
 
-    // Register capability listeners
-    this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
+    // Register capability listeners (subclasses add their own)
+    await this.registerCapabilityListeners();
 
     // Ensure capabilities are added
     await this.ensureCapabilities();
@@ -52,6 +54,26 @@ abstract class BaseLitterBoxDevice extends Homey.Device {
 
     const deviceData = this.getData() as LitterBoxDeviceData;
     this.log(`${this.getModelName()} device initialized with ID:`, deviceData.id);
+  }
+
+  /**
+   * Initialize or reinitialize the API client with credentials from app settings
+   */
+  private initializeApiClient(): void {
+    const username = this.homey.settings.get('petkit_username') as string;
+    const password = this.homey.settings.get('petkit_password') as string;
+    const region = this.homey.settings.get('api_region') as string || 'DE';
+
+    if (!username || !password) {
+      this.error('PetKit credentials not found in app settings');
+      return;
+    }
+
+    this.api = new PetKitClient({
+      username,
+      password,
+      region,
+    });
   }
 
   /**
@@ -95,35 +117,20 @@ abstract class BaseLitterBoxDevice extends Homey.Device {
     this.stopPolling();
   }
 
-  private async onCapabilityOnoff(value: boolean, _opts: object): Promise<void> {
-    if (value) {
-      await this.startCleaning();
-    }
+  /**
+   * Override in subclass to register model-specific capability listeners
+   */
+  protected async registerCapabilityListeners(): Promise<void> {
+    // Default implementation does nothing
+    // Subclasses should override to register their button handlers
   }
 
-  async startCleaning(): Promise<boolean> {
-    try {
-      const deviceData = this.getData() as LitterBoxDeviceData;
-      const deviceId = deviceData.id;
-      await this.api.startCleaning(deviceId);
-
-      this.log('Cleaning cycle started');
-
-      // Trigger flow
-      await this.homey.flow
-        .getDeviceTriggerCard('device_status_changed')
-        .trigger(this, { status: 'cleaning' });
-
-      // Reset onoff capability after starting cleaning
-      setTimeout(() => {
-        this.setCapabilityValue('onoff', false).catch(this.error.bind(this));
-      }, 1000);
-
-      return true;
-    } catch (error) {
-      this.error('Failed to start cleaning:', error);
-      throw error;
-    }
+  /**
+   * Get the device ID for API calls
+   */
+  protected getDeviceId(): number {
+    const deviceData = this.getData() as LitterBoxDeviceData;
+    return deviceData.id;
   }
 
   /**

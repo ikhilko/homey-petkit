@@ -1,0 +1,13 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Empty Litter"
+  },
+  "desc": {
+    "en": "Start the litter emptying process."
+  },
+  "getable": false,
+  "setable": false,
+  "uiComponent": "button",
+  "icon": "/assets/icon_delete.svg"
+}
