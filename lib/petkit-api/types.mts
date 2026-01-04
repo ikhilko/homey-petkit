@@ -6,6 +6,8 @@
 // Client Configuration Types
 // ============================================================================
 
+import { DeviceRecordType } from "./constants.mjs";
+
 /**
  * Options for creating a PetKitClient instance
  */
@@ -278,18 +280,74 @@ export interface AccountData {
 // ============================================================================
 
 /**
- * Device record (events)
+ * Content for pet_out events
  */
-export interface DeviceRecord {
+export interface PetOutContent {
+  timeIn: number;
+  timeOut: number;
+  autoClear: number;
+  interval: number;
+  petWeight: number;
+}
+
+/**
+ * Content for spray_over events
+ */
+export interface SprayOverContent {
+  startTime: number;
+  startReason: number;
+  result: number;
+  liquid: number;
+  fromClear: number;
+  liquidLack: boolean;
+}
+
+/**
+ * Content for clean_over events
+ */
+export interface CleanOverContent {
+  startTime?: number;
+  startReason?: number;
+  result?: number;
+  litterPercent: number;
+  box: number;
+  boxFull: boolean;
+}
+
+/**
+ * Base device record properties shared by all event types
+ */
+interface BaseDeviceRecord {
   id?: number;
   deviceId?: number;
   timestamp?: number;
-  eventType?: string;
-  content?: string;
-  petId?: number;
+  eventType?: number;
   duration?: number;
-  [key: string]: unknown;
+  userId?: string;
+  petId?: string;
+  subContent?: DeviceRecord[];
 }
+
+/**
+ * Device record (events) - discriminated union based on enumEventType
+ */
+export type DeviceRecord =
+  | (BaseDeviceRecord & {
+      enumEventType: 'pet_out';
+      content?: PetOutContent;
+    })
+  | (BaseDeviceRecord & {
+      enumEventType: 'spray_over';
+      content?: SprayOverContent;
+    })
+  | (BaseDeviceRecord & {
+      enumEventType: 'clean_over';
+      content?: CleanOverContent;
+    })
+  | (BaseDeviceRecord & {
+      enumEventType?: DeviceRecordType;
+      content?: Record<string, unknown>;
+    });
 
 /**
  * Device statistics
