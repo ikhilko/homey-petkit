@@ -41,7 +41,7 @@ abstract class BaseLitterBoxDriver extends Homey.Driver {
   async onInit(): Promise<void> {
     this.log(`${this.getModelName()} Driver has been initialized`);
 
-    // Register flow card actions
+    // Register common flow card actions
     this.homey.flow
       .getActionCard('start_cleaning')
       .registerRunListener(this._onFlowActionStartCleaning.bind(this));

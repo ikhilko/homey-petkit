@@ -1,0 +1,15 @@
+{
+  "title": {
+    "en": "Level the litter"
+  },
+  "hint": {
+    "en": "Level and spread the litter evenly"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=pura-max"
+    }
+  ]
+}

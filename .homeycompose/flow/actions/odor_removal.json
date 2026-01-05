@@ -1,0 +1,15 @@
+{
+  "title": {
+    "en": "Start odor removal"
+  },
+  "hint": {
+    "en": "Activate the odor removal / deodorizer"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=pura-max"
+    }
+  ]
+}

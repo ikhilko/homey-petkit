@@ -1,0 +1,15 @@
+{
+  "title": {
+    "en": "Start dumping litter"
+  },
+  "hint": {
+    "en": "Dump all litter from the litter box"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=pura-max"
+    }
+  ]
+}

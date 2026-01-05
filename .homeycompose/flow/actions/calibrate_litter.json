@@ -1,0 +1,15 @@
+{
+  "title": {
+    "en": "Calibrate litter level"
+  },
+  "hint": {
+    "en": "Calibrate the litter level sensor"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=pura-max"
+    }
+  ]
+}
