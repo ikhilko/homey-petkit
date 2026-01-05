@@ -7,7 +7,7 @@
     "en": "Start the cleaning process."
   },
   "getable": false,
-  "setable": false,
+  "setable": true,
   "uiComponent": "button",
   "icon": "/assets/icon_clean.svg"
 }

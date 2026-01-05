@@ -7,7 +7,7 @@
     "en": "Start the odor removal process."
   },
   "getable": false,
-  "setable": false,
+  "setable": true,
   "uiComponent": "button",
   "icon": "/assets/icon_fragrance.svg"
 }

@@ -7,7 +7,7 @@
     "en": "Start the litter emptying process."
   },
   "getable": false,
-  "setable": false,
+  "setable": true,
   "uiComponent": "button",
   "icon": "/assets/icon_delete.svg"
 }
