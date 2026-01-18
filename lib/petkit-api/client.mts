@@ -22,6 +22,7 @@ import type {
   FountainStatus,
   PurifierStatus,
   PetDetails,
+  DeviceRecord,
 } from './types.mjs';
 
 import {
@@ -952,6 +953,43 @@ export class PetKitClient {
       fanSpeed: state.refresh ?? 1,
       _raw: device,
     };
+  }
+
+  /**
+   * Fetch device records for a specific date
+   * @param deviceId - The device ID
+   * @param date - Date string in YYYYMMDD format
+   * @returns Array of DeviceRecord
+   */
+  async getDeviceRecordsForDate(deviceId: number, date: string): Promise<DeviceRecord[]> {
+    const device = await this.getDeviceStatus(deviceId);
+    const headers = await this.getSessionHeaders();
+    const deviceTypeCode = this._getDeviceTypeCode(device.deviceNfo as BasicDevice);
+
+    try {
+      const response = await this.client.post<ApiResponse<unknown>>(
+        `${deviceTypeCode}/${PetkitEndpoint.GET_DEVICE_RECORD}`,
+        new URLSearchParams({
+          date: date,
+          deviceId: String(deviceId),
+        }),
+        { headers }
+      );
+
+      let responseData = response.data && response.data[RES_KEY];
+      if (!responseData) {
+        return [];
+      }
+
+      if (typeof responseData === 'object' && responseData !== null && 'list' in responseData) {
+        responseData = (responseData as { list: unknown }).list;
+      }
+
+      return (responseData as DeviceRecord[]) || [];
+    } catch (error) {
+      console.error(`Failed to fetch device records for date ${date}: ${(error as Error).message}`);
+      return [];
+    }
   }
 
   // ============================================================================

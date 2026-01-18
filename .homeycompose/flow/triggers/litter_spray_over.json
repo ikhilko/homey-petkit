@@ -1,0 +1,41 @@
+{
+  "title": {
+    "en": "Deodorizing spray completed"
+  },
+  "hint": {
+    "en": "Triggered when the odor removal spray cycle finishes"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=pura-max"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "liquid_level",
+      "type": "number",
+      "title": {
+        "en": "Liquid Level (%)"
+      },
+      "example": 80
+    },
+    {
+      "name": "liquid_empty",
+      "type": "boolean",
+      "title": {
+        "en": "Liquid Empty"
+      },
+      "example": false
+    },
+    {
+      "name": "result",
+      "type": "string",
+      "title": {
+        "en": "Result"
+      },
+      "example": "success"
+    }
+  ]
+}

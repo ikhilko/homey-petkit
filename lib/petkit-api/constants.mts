@@ -506,4 +506,5 @@ export enum DeviceRecordType {
   PET_OUT = 'pet_out',
   SPRAY_OVER = 'spray_over',
   CLEAN_OVER = 'clean_over',
+  RESET_OVER = 'reset_over',
 }

@@ -314,6 +314,12 @@ export interface CleanOverContent {
   boxFull: boolean;
 }
 
+export interface ResetOverContent {
+  startTime?: number;
+  startReason?: number;
+  result?: number;
+}
+
 /**
  * Base device record properties shared by all event types
  */
@@ -325,6 +331,7 @@ interface BaseDeviceRecord {
   duration?: number;
   userId?: string;
   petId?: string;
+  petName?: string;
   subContent?: DeviceRecord[];
 }
 
@@ -343,6 +350,10 @@ export type DeviceRecord =
   | (BaseDeviceRecord & {
       enumEventType: 'clean_over';
       content?: CleanOverContent;
+    })
+  | (BaseDeviceRecord & {
+      enumEventType: 'reset_over';
+      content?: ResetOverContent;
     })
   | (BaseDeviceRecord & {
       enumEventType?: DeviceRecordType;

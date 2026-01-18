@@ -1,0 +1,57 @@
+{
+  "title": {
+    "en": "Pet left the litter box"
+  },
+  "hint": {
+    "en": "Triggered when a pet exits the litter box"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=pura-max"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "pet_name",
+      "type": "string",
+      "title": {
+        "en": "Pet Name"
+      },
+      "example": "Whiskers"
+    },
+    {
+      "name": "pet_weight",
+      "type": "number",
+      "title": {
+        "en": "Pet Weight (g)"
+      },
+      "example": 4500
+    },
+    {
+      "name": "duration",
+      "type": "number",
+      "title": {
+        "en": "Duration (seconds)"
+      },
+      "example": 120
+    },
+    {
+      "name": "time_in",
+      "type": "string",
+      "title": {
+        "en": "Time In"
+      },
+      "example": "14:30:00"
+    },
+    {
+      "name": "time_out",
+      "type": "string",
+      "title": {
+        "en": "Time Out"
+      },
+      "example": "14:32:00"
+    }
+  ]
+}

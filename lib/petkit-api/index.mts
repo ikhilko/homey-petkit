@@ -34,6 +34,10 @@ export type {
   PurifierStatus,
   ActionConfig,
   CommandSetting,
+  // Record content types
+  PetOutContent,
+  SprayOverContent,
+  CleanOverContent,
 } from './types.mjs';
 
 // ============================================================================

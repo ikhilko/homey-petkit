@@ -127,6 +127,20 @@
           "min": 50,
           "max": 95,
           "step": 5
+        },
+        {
+          "id": "record_stale_threshold",
+          "type": "number",
+          "label": {
+            "en": "Event trigger max age (minutes)"
+          },
+          "hint": {
+            "en": "Skip records older than this. Prevents triggering for events during app/API outage."
+          },
+          "value": 5,
+          "min": 1,
+          "max": 60,
+          "step": 1
         }
       ]
     }

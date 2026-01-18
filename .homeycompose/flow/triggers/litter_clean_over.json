@@ -1,0 +1,49 @@
+{
+  "title": {
+    "en": "Litter box cleaning completed"
+  },
+  "hint": {
+    "en": "Triggered when the automatic cleaning cycle finishes"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=pura-max"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "litter_percent",
+      "type": "number",
+      "title": {
+        "en": "Litter Level (%)"
+      },
+      "example": 65
+    },
+    {
+      "name": "waste_level",
+      "type": "number",
+      "title": {
+        "en": "Waste Level (%)"
+      },
+      "example": 30
+    },
+    {
+      "name": "box_full",
+      "type": "boolean",
+      "title": {
+        "en": "Waste Bin Full"
+      },
+      "example": false
+    },
+    {
+      "name": "result",
+      "type": "string",
+      "title": {
+        "en": "Result"
+      },
+      "example": "success"
+    }
+  ]
+}
